@@ -1,9 +1,9 @@
 # Local Test | Azure
 
-### build
-run azurite
-```bash
-azurite
+### Run
+```
+> npm i -g azurite
+> azurite
 ```
 
 `Run` -> `Start Debugging (F5)`
