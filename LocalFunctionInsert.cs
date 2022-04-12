@@ -7,14 +7,13 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Azure;
 using Azure.Data.Tables;
 
 namespace Company.LocalFunction
 {
-    public static class LocalFunction
+    public static class LocalFunctionInsert
     {
-        [FunctionName("LocalFunction")]
+        [FunctionName("LocalFunctionInsert")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
@@ -26,21 +25,13 @@ namespace Company.LocalFunction
             {
                 string nome = req.Query["nome"];
                 string cognome = req.Query["cognome"];
-                string email = req.Query["email"];
-                int eta = Convert.ToInt32(req.Query["eta"]);
-                
                 Persona persona = new Persona(nome, cognome);
-                persona.Email = email;
-                persona.Età = eta;
                 PersonaEntity personaEntity = new PersonaEntity(persona);
-                
+
                 string connectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
                 TableClient tableClient = new TableClient(connectionString, "tabellapersone");
-                tableClient.AddEntity<PersonaEntity>(personaEntity);
-                // PersonaEntity personaEntity = tableClient.GetEntity<PersonaEntity>(cognome, nome);
-                // personaEntity.Età = 200;
-                // tableClient.UpdateEntity<PersonaEntity>(personaEntity, personaEntity.ETag);
-                response = "OK";
+                await tableClient.AddEntityAsync(personaEntity);
+                response = "Ok";
             }
             catch (Exception e)
             {

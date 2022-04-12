@@ -11,9 +11,9 @@ using Azure.Data.Tables;
 
 namespace Company.LocalFunction
 {
-    public static class LocalFunctionQuery
+    public static class LocalFunctionDelete
     {
-        [FunctionName("LocalFunctionQuery")]
+        [FunctionName("LocalFunctionDelete")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
@@ -29,9 +29,10 @@ namespace Company.LocalFunction
                 string connectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
                 TableClient tableClient = new TableClient(connectionString, "tabellapersone");
                 PersonaEntity personaEntity = await tableClient.GetEntityAsync<PersonaEntity>(cognome, nome);
-                Persona persona = personaEntity.ToPersona();
+                // tableClient.DeleteEntityAsync<PersonaEntity>(cognome, nome, personaEntity.ETag);
 
-                response = JsonConvert.SerializeObject(persona, Formatting.Indented);
+                // string jsonResult = JsonConvert.SerializeObject(persona, Formatting.Indented);
+                // return new OkObjectResult(jsonResult);
             }
             catch (Exception e)
             {
