@@ -29,10 +29,9 @@ namespace Company.LocalFunction
                 string connectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
                 TableClient tableClient = new TableClient(connectionString, "tabellapersone");
                 PersonaEntity personaEntity = await tableClient.GetEntityAsync<PersonaEntity>(cognome, nome);
-                // tableClient.DeleteEntityAsync<PersonaEntity>(cognome, nome, personaEntity.ETag);
+                await tableClient.DeleteEntityAsync(cognome, nome, personaEntity.ETag);
 
-                // string jsonResult = JsonConvert.SerializeObject(persona, Formatting.Indented);
-                // return new OkObjectResult(jsonResult);
+                response = "Ok";
             }
             catch (Exception e)
             {

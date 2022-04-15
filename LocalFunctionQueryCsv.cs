@@ -11,9 +11,9 @@ using Azure.Data.Tables;
 
 namespace Company.LocalFunction
 {
-    public static class LocalFunctionInsert
+    public static class LocalFunctionQueryCsv
     {
-        [FunctionName("LocalFunctionInsert")]
+        [FunctionName("LocalFunctionQueryCsv")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
@@ -23,24 +23,28 @@ namespace Company.LocalFunction
             string response = "";
             try
             {
-                string nome = req.Query["nome"];
-                string cognome = req.Query["cognome"];
-                Persona persona = new Persona();
-                persona.Nome = nome;
-                persona.Cognome = cognome;
-                PersonaEntity personaEntity = new PersonaEntity(persona);
-
                 string connectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
                 TableClient tableClient = new TableClient(connectionString, "tabellapersone");
-                await tableClient.AddEntityAsync(personaEntity);
-                response = "Ok";
+                var personaEntities = tableClient.Query<PersonaEntity>();
+
+                response =  "COGNOME;NOME;ETA\n";
+                foreach (PersonaEntity personaEntity in personaEntities)
+                {
+                    Persona persona = personaEntity.ToPersona();
+                    response += $"{persona.Cognome};{persona.Nome};{persona.Eta}\n";
+                }
             }
             catch (Exception e)
             {
                 response = e.Message;
+                response = e.ToString();
             }
 
-            return new OkObjectResult(response);
+            return new ContentResult()
+            {
+                Content = response,
+                ContentType = "text/csv"
+            };
         }
     }
 }

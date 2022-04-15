@@ -8,24 +8,26 @@ class PersonaEntity: ITableEntity
     public DateTimeOffset? Timestamp { get; set; }
     public Azure.ETag ETag { get; set; }
     public string Email { get; set; }
-    public int Età { get; set; }
+    public int Eta { get; set; }
 
     public PersonaEntity(Persona p)
     {
         this.PartitionKey = p.Cognome;
         this.RowKey = p.Nome;
         this.Email = p.Email;
-        this.Età = p.Età;
+        this.Eta = p.Eta;
     }
-    
+
     public PersonaEntity()
     {
     }
 
     public Persona ToPersona() {
-        Persona p = new Persona(PartitionKey, RowKey);
+        Persona p = new Persona();
+        p.Cognome = this.PartitionKey;
+        p.Nome = this.RowKey;
         p.Email = this.Email;
-        p.Età = this.Età;
+        p.Eta = this.Eta;
         return p;
     }
 }
