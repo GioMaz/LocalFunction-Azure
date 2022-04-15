@@ -35,7 +35,7 @@ namespace Company.LocalFunction
             }
             catch (Exception e)
             {
-                response = e.Message;
+                return new ObjectResult(e.Message);
             }
 
             return new OkObjectResult(response);

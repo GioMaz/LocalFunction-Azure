@@ -11,9 +11,9 @@ using Azure.Data.Tables;
 
 namespace Company.LocalFunction
 {
-    public static class LocalFunctionQueryCsv
+    public static class LocalFunctionQueryHtml
     {
-        [FunctionName("LocalFunctionQueryCsv")]
+        [FunctionName("LocalFunctionQueryHtml")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
@@ -27,12 +27,22 @@ namespace Company.LocalFunction
                 TableClient tableClient = new TableClient(connectionString, "tabellapersone");
                 var personaEntities = tableClient.Query<PersonaEntity>();
 
-                response = "COGNOME;NOME;ETA\n";
+                response =  "<html>" + 
+                    "<style>table, th, td {border: 1px solid black; border-collapse: collapse;}</style>" +
+                    "<body>" + 
+                    "<table>" +
+                    "<th>COGNOME</th>" + 
+                    "<th>NOME</th>" +
+                    "<th>ETA</th></tr>";
+
                 foreach (PersonaEntity personaEntity in personaEntities)
                 {
                     Persona persona = personaEntity.ToPersona();
-                    response += $"{persona.Cognome};{persona.Nome};{persona.Eta}\n";
+                    response += $"<tr><td> {persona.Cognome} </td>" + 
+                    $"<td>{persona.Nome}</td>" +
+                    $"<td>{persona.Eta}</td></tr>";
                 }
+                response += "</table></body></html>";
             }
             catch (Exception e)
             {
@@ -42,8 +52,7 @@ namespace Company.LocalFunction
             return new ContentResult()
             {
                 Content = response,
-                ContentType = "text/csv"
-            };
-        }
+                ContentType = "text/html"
+            };        }
     }
 }
